@@ -3,7 +3,7 @@ numpy
 scipy
 pandas
 dash
-json
+json==2.0.9
 dash_core_components
 dash_html_components
 dash_daq
