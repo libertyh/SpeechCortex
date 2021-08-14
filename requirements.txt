@@ -1,7 +1,0 @@
-gunicorn
-python==3.6.8
-numpy==1.16.4
-scipy
-dash
-plotly
-pandas
