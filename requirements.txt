@@ -6,4 +6,3 @@ numpy
 pandas
 plotly
 flask_caching
-os
