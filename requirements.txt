@@ -2,4 +2,4 @@ dash
 scipy
 numpy
 pandas
-json
+plotly

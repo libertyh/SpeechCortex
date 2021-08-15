@@ -1,4 +1,3 @@
-import json
 import scipy.io
 import numpy as np
 
@@ -409,26 +408,6 @@ app.layout = html.Div([
 )
 
 
-# app.clientside_callback(
-#     ClientsideFunction("clientside", "figure"),
-#     Output(component_id="graph", component_property="figure"),
-#     [Input("fig-data", "data"), Input("corr-type-dropdown", "value")]
-# )
-
-@app.callback(
-    Output('hover-data', 'children'),
-    Input('brain-fig', 'hoverData'))
-def display_hover_data(hoverData):
-    return json.dumps(hoverData, indent=2)
-
-
-@app.callback(
-    Output('click-data', 'children'),
-    Input('brain-fig', 'clickData'))
-def display_click_data(clickData):
-    return json.dumps(clickData, indent=2)
-
-
 @app.callback(
     Output('rf', 'figure'),
     [Input('brain-fig', 'clickData'),
@@ -439,12 +418,6 @@ def update_rf(clickData, corr_val):
     except:
         elec_num = None
     return create_rf(elec_num=elec_num, corr_type=int(corr_val))
-
-@app.callback(
-    Output('relayout-data', 'children'),
-    Input('brain-fig', 'relayoutData'))
-def display_relayout_data(relayoutData):
-    return json.dumps(relayoutData, indent=2)
 
 
 @app.callback(
@@ -462,28 +435,13 @@ def display_click_data(rf_value, radio_value, brain_value, corr_val):
     fig = create_figure(dropdownData=rf_value, elec_marker=radio_value, 
                         show_rest_of_brain=brain_value, corr_type=int(corr_val))
 
-    #elif prop_id == 'rf-stim-dropdown':
-    #    return create_figure(dropdownData=value)
 
-    #if prop_id == 'rf-stim-dropdown':
-    #    return create_figure(dropdownData=value)
-    #elif prop_id == 'radio-color':
-    #    return update_electrodes(colorby=value)
-    json_data = json.dumps({
-         'states': ctx.states,
-         'triggered': ctx.triggered,
-         'inputs': ctx.inputs,
-         'value': value,
-         'radiovalue': radio_value,
-         'rf_value': rf_value,
-         'brain_value': brain_value,
-         }, indent=2)
 
     if brain_value:
         show_brain = "Whole brain"
     else:
         show_brain = "Temporal lobe only"
-    return fig, json_data, show_brain
+    return fig, show_brain
 
 
 if __name__ == '__main__':
