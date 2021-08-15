@@ -445,4 +445,4 @@ def display_click_data(rf_value, radio_value, brain_value, corr_val):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host='127.0.0.1')
+    app.run_server()
