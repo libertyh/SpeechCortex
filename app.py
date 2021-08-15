@@ -11,6 +11,7 @@ import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
 import time
+from flask_caching import Cache
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
