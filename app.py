@@ -12,12 +12,17 @@ from plotly.subplots import make_subplots
 import plotly.graph_objs as go
 import time
 
-#external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 suppress_callback_exceptions=True
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
+cache = Cache(app.server, config={
+        'CACHE_TYPE': 'redis',
+        'CACHE_REDIS_URL': os.environ.get('REDIS_URL', '')
+    })
+
+timeout = 300
 
 styles = {
     'pre': {
@@ -391,6 +396,7 @@ def update_rf(clickData, corr_val):
      Input('radio-color', 'value'),
      Input('show-brain', 'on'),
      Input('corr-type-dropdown', 'value')])
+@cache.memoize(timeout=timeout)  # in seconds
 def display_click_data(rf_value, radio_value, brain_value, corr_val):
     ctx = dash.callback_context
     prop_id = ctx.triggered[0]['prop_id'].split('.')[0]
