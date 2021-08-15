@@ -351,59 +351,22 @@ app.layout = html.Div([
             ),
         ],
 
-    style={'width': '70%', 'display': 'inline-block', 'height': '70%'}),
+        style={'width': '70%', 'display': 'inline-block', 'height': '70%'}),
 
-    html.Div([
-    dcc.Graph(
-        id='rf',
-        figure=rf_fig,
-    ),
-    ],
-    style={'width': '30%', 'display': 'inline-block', 'vertical-align': 'top'}),
-    #style={'width': '30%', 'display': 'block', 'vertical-align': 'top'}),
-
-    html.Div([
-            rf_markdown,
+        html.Div([
+        dcc.Graph(
+            id='rf',
+            figure=rf_fig,
+        ),
         ],
-        style={'background-color': 'lightgrey', 'padding': '10px'}),
-    html.Div([
-            dcc.Markdown("""
-                **Zoom and Relayout Data**
-
-                Click and drag on the graph to zoom or click on the zoom
-                buttons in the graph's menu bar.
-                Clicking on legend items will also fire
-                this event.
-            """),
-            html.Pre(id='relayout-data', style=styles['pre']),
-        ], className='three columns'),
-    html.Div(className='row', children=[
-        html.Div([
-            dcc.Markdown("""
-                **Hover Data**
-
-                Mouse over values in the graph.
-            """),
-            html.Pre(id='hover-data', style=styles['pre'])
-        ], className='three columns'),
+        style={'width': '30%', 'display': 'inline-block', 'vertical-align': 'top'}),
+        #style={'width': '30%', 'display': 'block', 'vertical-align': 'top'}),
 
         html.Div([
-            dcc.Markdown("""
-                **Click Data**
-
-                Click on points in the graph.
-            """),
-            html.Pre(id='click-data', style=styles['pre']),
-        ], className='three columns'),
-
-        html.Div([
-            dcc.Markdown("""
-                **Radio Data**
-
-            """),
-            html.Pre(id='radio-data', style=styles['pre']),
-        ], className='three columns'),
-    ])
+                rf_markdown,
+            ],
+            style={'background-color': 'lightgrey', 'padding': '10px'}),
+    
     ],
     style={'max-width': '1200px'}, 
 )
@@ -423,7 +386,6 @@ def update_rf(clickData, corr_val):
 
 @app.callback(
     [Output('brain-fig', 'figure'),
-     Output('radio-data','children'),
      Output('show-brain', 'label')],
     [Input('rf-stim-dropdown', 'value'), 
      Input('radio-color', 'value'),
