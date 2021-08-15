@@ -26,35 +26,34 @@ styles = {
     }
 }
 
-full_strf = scipy.io.loadmat('/Users/jsh3653/Documents/Austin/code/SpeechCortex/full_strf.mat')['strf']
-spect_strf = scipy.io.loadmat('/Users/jsh3653/Documents/Austin/code/SpeechCortex/spect_strf.mat')['strf']
-onset_strf = scipy.io.loadmat('/Users/jsh3653/Documents/Austin/code/SpeechCortex/onset_strf.mat')['strf']
-elecs = scipy.io.loadmat('/Users/jsh3653/Documents/Austin/code/SpeechCortex/elecmatrix.mat')['elecmatrix']
-vcorrs1 = scipy.io.loadmat('/Users/jsh3653/Documents/Austin/code/SpeechCortex/vcorrs.mat')['vcorrs']
-vcorrs = scipy.io.loadmat('/Users/jsh3653/Documents/Austin/code/SpeechCortex/uvar.mat')['uvar']
+full_strf = scipy.io.loadmat('full_strf.mat')['strf']
+spect_strf = scipy.io.loadmat('spect_strf.mat')['strf']
+onset_strf = scipy.io.loadmat('onset_strf.mat')['strf']
+elecs = scipy.io.loadmat('elecmatrix.mat')['elecmatrix']
+vcorrs1 = scipy.io.loadmat('vcorrs.mat')['vcorrs']
+vcorrs = scipy.io.loadmat('uvar.mat')['uvar']
 vcorrs = np.hstack((vcorrs, vcorrs1))
 
-imaging_dir = '/Users/jsh3653/Box/ECoG_imaging/'
-trivert = scipy.io.loadmat(f'{imaging_dir}/cvs_avg35_inMNI152/Meshes/lh_pial_trivert.mat')
+trivert = scipy.io.loadmat('lh_pial_trivert.mat')
 v = trivert['vert']
 t = trivert['tri']
 
-temporal_trivert = scipy.io.loadmat('/Users/jsh3653/Documents/Austin/code/SpeechCortex/cvs_avg_inMNI152_lh_temporal_pial.mat')
+temporal_trivert = scipy.io.loadmat('cvs_avg_inMNI152_lh_temporal_pial.mat')
 tv = temporal_trivert['vert']
 tt = temporal_trivert['tri']
 
-curv = scipy.io.loadmat('/Users/jsh3653/Documents/Austin/code/SpeechCortex/cvs_curv.mat')['curv']
-anatomy = scipy.io.loadmat('/Users/jsh3653/Documents/Austin/code/SpeechCortex/elecmatrix.mat')['anatomy']
+curv = scipy.io.loadmat('cvs_curv.mat')['curv']
+anatomy = scipy.io.loadmat('elecmatrix.mat')['anatomy']
 anum = np.array([a[0]-1 for a in anatomy])
 elecs[anum>=5,0] = elecs[anum>=5,0]-1
-anames = scipy.io.loadmat('/Users/jsh3653/Documents/Austin/code/SpeechCortex/elecmatrix.mat')['new7AreaNames']
+anames = scipy.io.loadmat('elecmatrix.mat')['new7AreaNames']
 anames2 = [a[0] for a in anames[0]]
 anat_labels = [anames2[a[0]-1] for a in anatomy]
-clr = scipy.io.loadmat('/Users/jsh3653/Documents/Austin/code/SpeechCortex/elecmatrix.mat')['area7Cols']
+clr = scipy.io.loadmat('elecmatrix.mat')['area7Cols']
 clrs = [clr[a[0]-1,:].tolist() for a in anatomy]
 
-stim_effects = pd.read_excel(io='/Users/jsh3653/Dropbox/Heschls_STRFs/data/stim/HG_stim_summary.xlsx',
-                             sheet_name='unique_for_manuscript')
+#stim_effects = pd.read_excel(io='/Users/jsh3653/Dropbox/Heschls_STRFs/data/stim/HG_stim_summary.xlsx',
+#                             sheet_name='unique_for_manuscript')
 
 def create_figure(dropdownData='RF', elec_marker='vcorrs', 
                   show_rest_of_brain=True, corr_type=12):
