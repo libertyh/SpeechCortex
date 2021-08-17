@@ -101,7 +101,7 @@ def create_figure(dropdownData='RF', elec_marker='vcorrs',
             colorbar=None,
             showscale=False,
             color='rgb(200,200,200)',
-            name='brain',
+            name='temporal lobe',
             opacity=0.6,
             lighting=dict(ambient=0.9, diffuse=0.9),
             intensity=curv,
@@ -364,6 +364,12 @@ app.layout = html.Div([
         dcc.Graph(
             id='rf',
             figure=rf_fig,
+        ),
+        dcc.Markdown(
+            id='stim_description',
+            '''
+            Description of stimulation result.
+            ''',
         ),
         ],
         style={'width': '30%', 'display': 'inline-block', 'vertical-align': 'top'}),
