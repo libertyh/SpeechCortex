@@ -415,24 +415,33 @@ app.layout = html.Div([
     [Output('rf', 'figure'),
      Output('stim_desc','children')],
     [Input('brain-fig', 'clickData'),
-     Input('corr-type-dropdown', 'value')])
-def update_rf(clickData, corr_val):
+     Input('corr-type-dropdown', 'value'),
+     Input('rf-stim-dropdown', 'value')])
+def update_rf(clickData, corr_val, rf_value):
     try:
         elec_num = clickData['points'][0]['id']
     except:
         elec_num = None
     
-    rf_updated = dcc.Loading(dcc.Graph(
-            id='rf',
-            figure=create_rf(elec_num=elec_num, corr_type=int(corr_val))),
-        )
-    passive_description = stim_effects['passive_effect'][elec_num]
-    repet_description = stim_effects['repetition_effect'][elec_num]
-    
-    stim_description =  '''
+    if rf_value == 'RF':
+        rf_updated = dcc.Loading(dcc.Graph(
+                id='rf',
+                figure=create_rf(elec_num=elec_num, corr_type=int(corr_val))),
+            )
+    else:
+        rf_updated = ''
+
+    if rf_value == 'ST':
+        passive_description = stim_effects['passive_effect'][elec_num]
+        repet_description = stim_effects['repetition_effect'][elec_num]
+        
+        stim_description =  '''
                         *Passive:* {passive_description}
                         *Repetition:* {repet_description}  
                         '''
+    else:
+        stim_description = ''
+    
     return rf_updated, stim_description
 
 
@@ -471,10 +480,7 @@ def display_click_data(rf_value, radio_value, brain_value, corr_val):
         rf_stim_update = dcc.Loading(dcc.Graph(id='rf', figure=rf_fig))
     else:
         rf_stim_update = dcc.Loading((dcc.Markdown('''
-
-
-
-            ## Click on an electrode to view stimulation effects.
+            ### Click on an electrode to view stimulation effects.
             ''',
             id='stim_desc')))
 
