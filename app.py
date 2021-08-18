@@ -418,9 +418,8 @@ app.layout = html.Div([
                        style={'background-color': '#f1f2f2', 'padding': '10px', 'color': '#000000'}),
                 html.P('3 (red): Complex response',
                        style={'background-color': '#73001c', 'padding': '10px', 'color': '#ffffff'}),
-                html.('', 
-                       id='stim_desc'),
-                html.P('', id='repet_effect')
+                html.H5('', id='stim_desc'),
+                html.H5('', id='repet_effect')
                 ],
             id="stim_div",
             style={'width': '100%', 'display': 'none', 'vertical-align': 'middle'},
