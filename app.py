@@ -452,7 +452,7 @@ def update_rf(clickData, corr_val, rf_value):
         if (prop_id == 'rf-stim-dropdown') or (prop_id=='corr-type-dropdown'):
             elec_num = 0
             stim_updated = 'Click on an electrode to see stimulation results.'
-            repet_update = ''
+            repet_updated = ''
         else: 
             passive_description = stim_df['passive_effect'][elec_num]
             repet_description = stim_df['repetition_effect'][elec_num]
