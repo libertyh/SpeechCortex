@@ -410,7 +410,7 @@ app.layout = html.Div([
                 html.H4('Stimulation effects'),
                 html.P('Click on an electrode to see effects of stimulation on passive \
                         listening and on speech perception. We recommend you turn off\
-                        the "whole brain" switch at the top left to show the temporal lobe only.')
+                        the "whole brain" switch at the top left to show the temporal lobe only.'),
                 html.P('Effect types: ', style={'font-weight': 'bold'}),
                 html.P('1 (blue): sound hallucination + no problems perceiving speech',
                        style={'background-color': '#0c2350', 'padding': '10px', 'color': '#ffffff'}),
