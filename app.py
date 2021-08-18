@@ -84,7 +84,7 @@ def create_figure(dropdownData='RF', elec_marker='vcorrs',
         )
     else:
         df = pd.DataFrame(
-            data={'elec_number': stim_effects['El1'],
+            data={'elec_number': np.arange(len(stim_effects)),
               'x': stim_effects['x'],
               'y': stim_effects['y'],
               'z': stim_effects['z'],
@@ -426,8 +426,8 @@ def update_rf(clickData, corr_val):
             id='rf',
             figure=create_rf(elec_num=elec_num, corr_type=int(corr_val))),
         )
-    passive_description = stim_effects['passive_effect'][stim_effects['elec_num'] == elec_num]
-    repet_description = stim_effects['repetition_effect'][stim_effects['elec_num'] == elec_num]
+    passive_description = stim_effects['passive_effect'][elec_num]
+    repet_description = stim_effects['repetition_effect'][elec_num]
     
     stim_description =  '''
                         *Passive:* {passive_description}
