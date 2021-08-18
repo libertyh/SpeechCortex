@@ -63,6 +63,16 @@ clrs = [clr[a[0]-1,:].tolist() for a in anatomy]
 #stim_effects = pd.read_excel(io='/Users/jsh3653/Dropbox/Heschls_STRFs/data/stim/HG_stim_summary.xlsx',
 #                             sheet_name='unique_for_manuscript')
 stim_effects = pd.read_excel(io='stim_results.xlsx', sheet_name='Sheet1')
+stim_df = pd.DataFrame(
+            data={'elec_number': np.arange(len(stim_effects)),
+              'x': stim_effects['x'],
+              'y': stim_effects['y'],
+              'z': stim_effects['z'],
+              'anatomy': stim_effects['anatomy'],
+              'effect': stim_effects['effect'],
+              'passive_effect': stim_effects['passive_effect'],
+              'repetition_effect': stim_effects['repetition_effect']},
+        )
 
 def create_figure(dropdownData='RF', elec_marker='vcorrs', 
                   show_rest_of_brain=True, corr_type=12):
@@ -84,14 +94,7 @@ def create_figure(dropdownData='RF', elec_marker='vcorrs',
               'vcorrs': vcorrs[chosen_elecs,corr_type]},
         )
     else:
-        df = pd.DataFrame(
-            data={'elec_number': np.arange(len(stim_effects)),
-              'x': stim_effects['x'],
-              'y': stim_effects['y'],
-              'z': stim_effects['z'],
-              'anatomy': stim_effects['anatomy'],
-              'effect': stim_effects['effect']},
-        )
+        df = stim_df
 
 
     if elec_marker == 'anatomy_num':
@@ -447,11 +450,11 @@ def update_rf(clickData, corr_val, rf_value):
             elec_num = 0
             stim_updated = 'Click on an electrode to see stimulation results.'
         else: 
-            passive_description = stim_effects['passive_effect'][elec_num]
-            repet_description = stim_effects['repetition_effect'][elec_num]
+            passive_description = stim_df['passive_effect'][elec_num]
+            repet_description = stim_df['repetition_effect'][elec_num]
             rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
-            stim_updated = 'There is an effect here.'#f'*Passive:* {passive_description} \
-                           #*Repetition:* {repet_description}'
+            stim_updated = '*Passive:* ' + passive_description + '<br>' \
+                           +'*Repetition:* ' + repet_description
 
     return rf_updated, stim_updated
 
@@ -501,5 +504,5 @@ def display_click_data(rf_value, radio_value, brain_value, corr_val):
 
 
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(processes=6)
     #app.run_server(debug=True, host='127.0.0.1')
