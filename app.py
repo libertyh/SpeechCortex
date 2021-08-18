@@ -409,10 +409,10 @@ app.layout = html.Div([
             ),
             html.Div([
                 html.H4('<br><br>Stimulation effects'),
-                html.P('Effect types: ')
-                html.P('    1 (blue): sound hallucination + no problems perceiving speech')
-                html.P('    2 (white): no sound hallucination + problems perceiving speech')
-                html.P('    3 (red): Complex response')
+                html.P('Effect types: '),
+                html.P('    1 (blue): sound hallucination + no problems perceiving speech'),
+                html.P('    2 (white): no sound hallucination + problems perceiving speech'),
+                html.P('    3 (red): Complex response'),
                 html.P('Click on an electrode to show stimulation effects.', 
                        id='stim_desc'),
                 html.P('', id='repet_effect')
