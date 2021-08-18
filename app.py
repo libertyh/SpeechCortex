@@ -367,6 +367,15 @@ app.layout = html.Div([
         ),
         ],
         style={'width': '30%', 'display': 'inline-block', 'vertical-align': 'top'}),
+
+        html.Div([
+        dcc.Markdown(
+            '''
+            ''',
+            id='stim_results',
+            ),
+        ],
+        style={'width': '30%', 'display': 'hidden', 'vertical-align': 'top'}),
         #style={'width': '30%', 'display': 'block', 'vertical-align': 'top'}),
 
         html.Div([
