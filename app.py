@@ -433,6 +433,7 @@ app.layout = html.Div([
 def update_rf(clickData, corr_val, rf_value):
     ctx = dash.callback_context
     prop_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
     try:
         elec_num = clickData['points'][0]['id']
     except:
@@ -442,11 +443,14 @@ def update_rf(clickData, corr_val, rf_value):
         rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
         stim_updated = 'No data'
     else:
-        elec_num = 0
-        passive_description = stim_effects['passive_effect'][elec_num]
-        repet_description = stim_effects['repetition_effect'][elec_num]
-        rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
-        stim_updated = f'*Passive:* {passive_description} \
+        if (prop_id == 'rf-stim-dropdown') or (prop_id=='corr-type-dropdown'):
+            elec_num = 0
+            stim_updated = 'Click on an electrode to see stimulation results.'
+        else: 
+            passive_description = stim_effects['passive_effect'][elec_num]
+            repet_description = stim_effects['repetition_effect'][elec_num]
+            rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
+            stim_updated = f'*Passive:* {passive_description} \
                          *Repetition:* {repet_description}'
 
     return rf_updated, stim_updated
