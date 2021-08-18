@@ -413,7 +413,7 @@ app.layout = html.Div([
 # have clicked on the brain figure
 @app.callback(
     [Output('rf', 'figure'),
-     Output('stim_results','children')],
+     Output('stim_desc','children')],
     [Input('brain-fig', 'clickData'),
      Input('corr-type-dropdown', 'value')])
 def update_rf(clickData, corr_val):
@@ -421,11 +421,19 @@ def update_rf(clickData, corr_val):
         elec_num = clickData['points'][0]['id']
     except:
         elec_num = None
-    rf_updated = dcc.Graph(
+    
+    rf_updated = dcc.Loading(dcc.Graph(
             id='rf',
-            figure=create_rf(elec_num=elec_num, corr_type=int(corr_val)),
+            figure=create_rf(elec_num=elec_num, corr_type=int(corr_val))),
         )
-    return rf_updated
+    passive_description = stim_effects['passive_effect'][stim_effects['elec_num'] == elec_num]
+    repet_description = stim_effects['repetition_effect'][stim_effects['elec_num'] == elec_num]
+    
+    stim_description =  '''
+                        *Passive:* {passive_description}
+                        *Repetition:* {repet_description}  
+                        '''
+    return rf_updated, stim_description
 
 
 # This callback will change the brain figure to show
@@ -460,11 +468,15 @@ def display_click_data(rf_value, radio_value, brain_value, corr_val):
         show_brain = "Temporal lobe only"
 
     if rf_value=='RF':
-        rf_stim_update = dcc.Graph(id='rf', figure=rf_fig)
+        rf_stim_update = dcc.Loading(dcc.Graph(id='rf', figure=rf_fig))
     else:
-        rf_stim_update = dcc.Markdown('''
-            Click on an electrode to view stimulation effects.
-            ''')
+        rf_stim_update = dcc.Loading((dcc.Markdown('''
+
+
+
+            ## Click on an electrode to view stimulation effects.
+            ''',
+            id='stim_desc')))
 
     return fig, show_brain, rf_stim_update
 
