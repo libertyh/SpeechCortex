@@ -277,9 +277,7 @@ def create_rf(elec_num=310, corr_type=12):
         )
 
     if corr_type != 20:
-        if corr_type == 0:
-            continue
-        else:
+        if corr_type != 0:
             fig.add_hline(y=0.5, line_width=1, line_color='black', line_dash='dash')
             fig.add_hline(y=14.5, line_width=1, line_color='black', line_dash='dash')
             fig.add_hline(y=24.5, line_width=1, line_color='black', line_dash='dash')
