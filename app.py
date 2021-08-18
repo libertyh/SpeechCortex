@@ -371,6 +371,7 @@ app.layout = html.Div([
         html.Div([
         dcc.Markdown(
             '''
+            These are the stim results.
             ''',
             id='stim_results',
             ),
@@ -402,7 +403,9 @@ def update_rf(clickData, corr_val):
 
 @app.callback(
     [Output('brain-fig', 'figure'),
-     Output('show-brain', 'label')],
+     Output('show-brain', 'label'),
+     Output('rf', 'style'),
+     Output('stim_results', 'style')],
     [Input('rf-stim-dropdown', 'value'), 
      Input('radio-color', 'value'),
      Input('show-brain', 'on'),
@@ -421,7 +424,13 @@ def display_click_data(rf_value, radio_value, brain_value, corr_val):
         show_brain = "Whole brain"
     else:
         show_brain = "Temporal lobe only"
-    return fig, show_brain
+    if rf_value == 'RF':
+        stim_style = {'width': '30%', 'display': 'none', 'vertical-align': 'top'}
+        rf_style = {'width': '30%', 'display': 'inline-block', 'vertical-align': 'top'}
+    else:
+        stim_style = {'width': '30%', 'display': 'inline-block', 'vertical-align': 'top'}
+        rf_style = {'width': '30%', 'display': 'hidden', 'vertical-align': 'top'}
+    return fig, show_brain, rf_style, stim_style
 
 
 if __name__ == '__main__':
