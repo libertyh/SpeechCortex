@@ -61,24 +61,36 @@ clrs = [clr[a[0]-1,:].tolist() for a in anatomy]
 
 #stim_effects = pd.read_excel(io='/Users/jsh3653/Dropbox/Heschls_STRFs/data/stim/HG_stim_summary.xlsx',
 #                             sheet_name='unique_for_manuscript')
+stim_effects = pd.read_excel(io='stim_results.xlsx', sheet_name='Sheet1')
 
 def create_figure(dropdownData='RF', elec_marker='vcorrs', 
                   show_rest_of_brain=True, corr_type=12):
-
+    '''
+    Create the brain figure and modify the electrode
+    colors based on dropdown menus. The frontal lobe
+    will be shown or not depending on the value of the
+    show_rest_of_brain switch.
+    '''
     if dropdownData=='RF':
         chosen_elecs = np.arange(elecs.shape[0])
-    else:
-        chosen_elecs = np.arange(5)
-
-    df = pd.DataFrame(
-        data={'elec_number': chosen_elecs,
+        df = pd.DataFrame(
+            data={'elec_number': chosen_elecs,
               'x': elecs[chosen_elecs,0],
               'y': elecs[chosen_elecs,1],
               'z': elecs[chosen_elecs,2],
               'anatomy': [anat_labels[a] for a in chosen_elecs],
               'anatomy_num': [anum[a] for a in chosen_elecs],
               'vcorrs': vcorrs[chosen_elecs,corr_type]},
-    )
+        )
+    else:
+        df = pd.DataFrame(
+            data={'elec_number': stim_effects['El1'],
+              'x': stim_effects['x'],
+              'y': stim_effects['y'],
+              'z': stim_effects['z'],
+              'effect': stim_effects['effect']},
+        )
+
 
     if elec_marker == 'anatomy_num':
         marker = dict(color=clrs, 
@@ -89,6 +101,12 @@ def create_figure(dropdownData='RF', elec_marker='vcorrs',
                       cmin=-df['vcorrs'].max(), 
                       cmax=df['vcorrs'].max(),
                       size=6, colorbar=dict(title='Corr.', thickness=20))
+    elif elec_marker == 'stim_eff':
+        marker = dict(color=df['effect'], 
+                      colorscale='RdBu_r', 
+                      cmin=1, 
+                      cmax=3,
+                      size=6, colorbar=dict(title='Effect', thickness=20))        
 
     fig = go.Figure(
         data = [go.Mesh3d(
@@ -171,13 +189,21 @@ def create_figure(dropdownData='RF', elec_marker='vcorrs',
 
     return fig
 
-# def update_electrodes(colorby='vcorrs', ids=[]):
-#     fig.update_traces(selector=dict(ids=ids),
-#                       marker=dict(color='blue'))
-#     return fig
 
 def create_rf(elec_num=310, corr_type=12):
-    #if elec_num <= spect_strf.shape[0]:
+    '''
+    This creates the receptive field heat map plot for
+    the model of interest (based on `corr_type` number).
+    For reference, those corr numbers are:
+        Unique Onset: 0
+        Unique Peak rate: 1
+        Unique Features: 2 
+        Unique Abs Pitch: 3
+        Unique Rel Pitch: 4
+        Unique ...': 5
+        Full phonological+pitch: 12,
+        Spectrogram: 20
+    '''
     if elec_num is None:
         elec_num = 310
         title = 'Please select an electrode...'
@@ -270,6 +296,8 @@ rf_markdown = dcc.Markdown('''
             * Rotate the brain by clicking and dragging
             ''')
 
+# This creates the initial app in its first instantiation. This will be
+# modified by user behaviors (clicking, changing menu items, etc.)
 app.layout = html.Div([
             html.Div([
             dcc.Markdown('''
@@ -376,7 +404,7 @@ app.layout = html.Div([
             id='stim_results',
             ),
         ],
-        style={'width': '30%', 'display': 'hidden', 'vertical-align': 'top'}),
+        style={'width': '30%', 'display': 'none', 'vertical-align': 'top'}),
         #style={'width': '30%', 'display': 'block', 'vertical-align': 'top'}),
 
         html.Div([
@@ -389,6 +417,9 @@ app.layout = html.Div([
 )
 
 
+# This callback will create the receptive field figure
+# based on the correlation type you choose and what you
+# have clicked on the brain figure
 @app.callback(
     Output('rf', 'figure'),
     [Input('brain-fig', 'clickData'),
@@ -401,6 +432,10 @@ def update_rf(clickData, corr_val):
     return create_rf(elec_num=elec_num, corr_type=int(corr_val))
 
 
+# This callback will change the brain figure to show
+# either receptive field data or stimulation data 
+# based on the dropdown values. It will also change
+# the correlation type that is shown if in "RF" mode
 @app.callback(
     [Output('brain-fig', 'figure'),
      Output('show-brain', 'label'),
@@ -410,15 +445,19 @@ def update_rf(clickData, corr_val):
      Input('radio-color', 'value'),
      Input('show-brain', 'on'),
      Input('corr-type-dropdown', 'value')])
-@cache.memoize(timeout=timeout)  # in seconds
+@cache.memoize(timeout=timeout)  # in seconds, cache the data 
 def display_click_data(rf_value, radio_value, brain_value, corr_val):
     ctx = dash.callback_context
     prop_id = ctx.triggered[0]['prop_id'].split('.')[0]
     value = ctx.triggered[0]['value']
-    fig = create_figure(dropdownData=rf_value, elec_marker=radio_value, 
+
+    if rf_value == 'ST':
+        # Override elec_marker type
+        el_marker = 'stim_eff'
+    else:
+        el_marker = radio_value
+    fig = create_figure(dropdownData=rf_value, elec_marker=el_marker, 
                         show_rest_of_brain=brain_value, corr_type=int(corr_val))
-
-
 
     if brain_value:
         show_brain = "Whole brain"
@@ -429,7 +468,7 @@ def display_click_data(rf_value, radio_value, brain_value, corr_val):
         rf_style = {'width': '30%', 'display': 'inline-block', 'vertical-align': 'top'}
     else:
         stim_style = {'width': '30%', 'display': 'inline-block', 'vertical-align': 'top'}
-        rf_style = {'width': '30%', 'display': 'hidden', 'vertical-align': 'top'}
+        rf_style = {'width': '30%', 'display': 'none', 'vertical-align': 'top'}
     return fig, show_brain, rf_style, stim_style
 
 
