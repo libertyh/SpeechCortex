@@ -205,7 +205,6 @@ def create_rf(elec_num=310, corr_type=12):
         Unique Features: 2 
         Unique Abs Pitch: 3
         Unique Rel Pitch: 4
-        Unique ...': 5
         Full phonological+pitch: 12,
         Spectrogram: 20
     '''
@@ -227,6 +226,12 @@ def create_rf(elec_num=310, corr_type=12):
             ticksize = 12
             ylabel = 'Frequency (kHz)'
             autorange = True
+        elif corr_type == 0: # onset
+            strf = np.fliplr(onset_strf[elec_num,:])
+            ticksize = 12
+            yticks = [0]
+            yticklabels = ['onset']
+            autorange = True
         else:
             strf = np.fliplr(full_strf[elec_num,:,:])
             #yticks = [0,1,15,25,35]
@@ -246,26 +251,40 @@ def create_rf(elec_num=310, corr_type=12):
     smax = np.abs(strf.max())
     if smax==0:
         smax = 1
-    fig = go.Figure(data = [
-            go.Heatmap(
-                    x=np.linspace(-0.6,0,60),
-                    z=strf,
-                    zmin=-smax,
-                    zmax=smax,
-                    colorscale='RdBu_r',
-                    colorbar=dict(title='Beta<br>weight<br>(A.U.)',
-                                  tickvals=[-smax,0,smax],
-                                  ticktext=['-max','0','max']),
-            )
-        ]
-    )
+
+    if corr_type != 0:
+        fig = go.Figure(data = [
+                go.Heatmap(
+                        x=np.linspace(-0.6,0,60),
+                        z=strf,
+                        zmin=-smax,
+                        zmax=smax,
+                        colorscale='RdBu_r',
+                        colorbar=dict(title='Beta<br>weight<br>(A.U.)',
+                                      tickvals=[-smax,0,smax],
+                                      ticktext=['-max','0','max']),
+                )
+            ]
+        )
+    else:
+        fig = go.Figure(data = [
+                go.Scatter(
+                        x=np.arange(60),
+                        y=strf,
+                        mode='lines',
+                    )
+            ]
+        )
 
     if corr_type != 20:
-        fig.add_hline(y=0.5, line_width=1, line_color='black', line_dash='dash')
-        fig.add_hline(y=14.5, line_width=1, line_color='black', line_dash='dash')
-        fig.add_hline(y=24.5, line_width=1, line_color='black', line_dash='dash')
-        fig.add_hline(y=34.5, line_width=1, line_color='black', line_dash='dash')
-        fig.add_hline(y=44.5, line_width=1, line_color='black', line_dash='dash')
+        if corr_type == 0:
+            continue
+        else:
+            fig.add_hline(y=0.5, line_width=1, line_color='black', line_dash='dash')
+            fig.add_hline(y=14.5, line_width=1, line_color='black', line_dash='dash')
+            fig.add_hline(y=24.5, line_width=1, line_color='black', line_dash='dash')
+            fig.add_hline(y=34.5, line_width=1, line_color='black', line_dash='dash')
+            fig.add_hline(y=44.5, line_width=1, line_color='black', line_dash='dash')
     else:
         fig.add_hline(y=11, line_width=1, line_color='black', line_dash='dash')
         fig.add_hline(y=43, line_width=1, line_color='black', line_dash='dash')
@@ -348,14 +367,13 @@ app.layout = html.Div([
                 dcc.Dropdown(
                     id='corr-type-dropdown',
                     options=[
+                        {'label': 'Full phonological+pitch', 'value': '12'},
+                        {'label': 'Spectrogram', 'value': '20'},
                         {'label': 'Unique Onset', 'value': '0'},
                         {'label': 'Unique Peak rate', 'value': '1'},
                         {'label': 'Unique Features', 'value': '2'},
                         {'label': 'Unique Abs Pitch', 'value': '3'},
                         {'label': 'Unique Rel Pitch', 'value': '4'},
-                        {'label': 'Unique ...', 'value': '5'},
-                        {'label': 'Full phonological+pitch', 'value': '12'},
-                        {'label': 'Spectrogram', 'value': '20'},
                     ],
                     # options=[
                     #     {'label': 'Onset', 'value': '0'},
