@@ -299,6 +299,10 @@ rf_markdown = dcc.Markdown('''
             **Brain Controls:**
             * Zoom in and out of the brain by scrolling
             * Rotate the brain by clicking and dragging
+
+            Note that the nonlinear warping of electrodes sometimes means the electrodes will seem farther forward
+            or back than expected. The anatomical name that shows on hover is taken from the original (native space)
+            brain data. Electrodes have been projected to the nearest surface vertex for ease of clicking. 
             ''')
 
 # This creates the initial app in its first instantiation. This will be
@@ -404,7 +408,11 @@ app.layout = html.Div([
             style={'width': '100%', 'display': 'inline-block', 'vertical-align': 'top'},
             ),
             html.Div([
-                html.H4('Stimulation effects'),
+                html.H4('<br><br>Stimulation effects'),
+                html.P('Effect types: ')
+                html.P('    1 (blue): sound hallucination + no problems perceiving speech')
+                html.P('    2 (white): no sound hallucination + problems perceiving speech')
+                html.P('    3 (red): Complex response')
                 html.P('Click on an electrode to show stimulation effects.', 
                        id='stim_desc'),
                 html.P('', id='repet_effect')
