@@ -404,8 +404,10 @@ app.layout = html.Div([
             style={'width': '100%', 'display': 'inline-block', 'vertical-align': 'top'},
             ),
             html.Div([
-                html.H3('Click on an electrode to view stimulation effects.', 
+                html.H4('Stimulation effects'),
+                html.P('Click on an electrode to show stimulation effects.', 
                        id='stim_desc')
+                html.P('', id='repet_effect')
                 ],
             id="stim_div",
             style={'width': '100%', 'display': 'none', 'vertical-align': 'middle'},
@@ -429,7 +431,8 @@ app.layout = html.Div([
 # have clicked on the brain figure
 @app.callback(
      [Output('rf', 'figure'),
-      Output('stim_desc', 'children')],
+      Output('stim_desc', 'children'),
+      Output('repet_effect', 'children')],
     [Input('brain-fig', 'clickData'),
      Input('corr-type-dropdown', 'value'),
      Input('rf-stim-dropdown', 'value')])
@@ -449,14 +452,15 @@ def update_rf(clickData, corr_val, rf_value):
         if (prop_id == 'rf-stim-dropdown') or (prop_id=='corr-type-dropdown'):
             elec_num = 0
             stim_updated = 'Click on an electrode to see stimulation results.'
+            repet_update = ''
         else: 
             passive_description = stim_df['passive_effect'][elec_num]
             repet_description = stim_df['repetition_effect'][elec_num]
             rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
-            stim_updated = '*Passive:* ' + passive_description + '<br>' \
-                           +'*Repetition:* ' + repet_description
+            stim_updated = 'Passive perception: ' + passive_description
+            repet_updated = 'Repetition effect: ' + repet_description
 
-    return rf_updated, stim_updated
+    return rf_updated, stim_updated, repet_updated
 
 # This callback will change the brain figure to show
 # either receptive field data or stimulation data 
