@@ -401,10 +401,8 @@ app.layout = html.Div([
             style={'width': '100%', 'display': 'inline-block', 'vertical-align': 'top'},
             ),
             html.Div([
-                dcc.Markdown('''
-                    ### Click on an electrode to view stimulation effects.
-                    ''',
-                    id='stim_desc')
+                html.H3('Click on an electrode to view stimulation effects.', 
+                       id='stim_desc')
                 ],
             id="stim_div",
             style={'width': '100%', 'display': 'none', 'vertical-align': 'middle'},
@@ -428,7 +426,7 @@ app.layout = html.Div([
 # have clicked on the brain figure
 @app.callback(
      [Output('rf', 'figure'),
-      Output('stim_div', 'children')],
+      Output('stim_desc', 'children')],
     [Input('brain-fig', 'clickData'),
      Input('corr-type-dropdown', 'value'),
      Input('rf-stim-dropdown', 'value')])
@@ -442,19 +440,14 @@ def update_rf(clickData, corr_val, rf_value):
     
     if rf_value == 'RF':
         rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
-        stim_updated = dcc.Markdown('''
-                        No data.
-                       ''',
-                    id='stim_desc')
+        stim_updated = 'No data'
     else:
+        elec_num = 0
         passive_description = stim_effects['passive_effect'][elec_num]
         repet_description = stim_effects['repetition_effect'][elec_num]
-        rf_updated = PreventUpdate
-        stim_updated = dcc.Markdown('''
-                        *Passive:* {passive_description}
-                        *Repetition:* {repet_description}  
-                       ''',
-                    id='stim_desc')
+        rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
+        stim_updated = f'*Passive:* {passive_description} \
+                         *Repetition:* {repet_description}'
 
     return rf_updated, stim_updated
 
