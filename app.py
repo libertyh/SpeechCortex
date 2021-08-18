@@ -5,7 +5,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_daq as daq
-from dash.dependencies import Input, Output, ClientsideFunction
+from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.express as px
 import pandas as pd
 from plotly.subplots import make_subplots
@@ -391,10 +391,24 @@ app.layout = html.Div([
         style={'width': '70%', 'display': 'inline-block', 'height': '70%'}),
 
         html.Div([
-        dcc.Graph(
-            id='rf',
-            figure=rf_fig,
-        ),
+            html.Div([
+                dcc.Graph(
+                    id='rf',
+                    figure=rf_fig,
+                ),
+            ],
+            id="rf_div",
+            style={'width': '100%', 'display': 'inline-block', 'vertical-align': 'top'},
+            ),
+            html.Div([
+                dcc.Markdown('''
+                    ### Click on an electrode to view stimulation effects.
+                    ''',
+                    id='stim_desc')
+                ],
+            id="stim_div",
+            style={'width': '100%', 'display': 'none', 'vertical-align': 'middle'},
+            )
         ],
         id="rf_or_stim_div",
         style={'width': '30%', 'display': 'inline-block', 'vertical-align': 'top'}),
@@ -428,18 +442,18 @@ def update_rf(clickData, corr_val, rf_value):
     
     if rf_value == 'RF':
         rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
-        return rf_updated, PreventUpdate
+        stim_updated = ''' none '''
     else:
         passive_description = stim_effects['passive_effect'][elec_num]
         repet_description = stim_effects['repetition_effect'][elec_num]
-        
-        stim_updated = dcc.Loading((dcc.Markdown('''
+        rf_updated = PreventUpdate
+        stim_updated = '''
                         *Passive:* {passive_description}
                         *Repetition:* {repet_description}  
-                        ''',
-            id='stim_desc')))
-        return PreventUpdate, stim_updated
+                       '''
 
+
+    return rf_updated, stim_updated
 
 # This callback will change the brain figure to show
 # either receptive field data or stimulation data 
@@ -448,7 +462,8 @@ def update_rf(clickData, corr_val, rf_value):
 @app.callback(
     [Output('brain-fig', 'figure'),
      Output('show-brain', 'label'),
-     Output('rf_or_stim_div', 'children')],
+     Output('rf_div', 'style'),
+     Output('stim_div', 'style'),],
     [Input('rf-stim-dropdown', 'value'), 
      Input('radio-color', 'value'),
      Input('show-brain', 'on'),
@@ -462,8 +477,13 @@ def display_click_data(rf_value, radio_value, brain_value, corr_val):
     if rf_value == 'ST':
         # Override elec_marker type
         el_marker = 'stim_eff'
+        stim_style = {'width': '100%', 'display': 'inline-block', 'vertical-align': 'middle'}
+        rf_style = {'width': '100%', 'display': 'none', 'vertical-align': 'top'}
     else:
         el_marker = radio_value
+        stim_style = {'width': '100%', 'display': 'none', 'vertical-align': 'middle'}
+        rf_style = {'width': '100%', 'display': 'inline-block', 'vertical-align': 'top'}
+    
     fig = create_figure(dropdownData=rf_value, elec_marker=el_marker, 
                         show_rest_of_brain=brain_value, corr_type=int(corr_val))
 
@@ -472,16 +492,14 @@ def display_click_data(rf_value, radio_value, brain_value, corr_val):
     else:
         show_brain = "Temporal lobe only"
 
-    if rf_value=='RF':
-        rf_stim_update = dcc.Loading(dcc.Graph(id='rf', figure=rf_fig))
-    else:
-        rf_stim_update = dcc.Loading((dcc.Markdown('''
-            ### Click on an electrode to view stimulation effects.
-            ''',
-            id='stim_desc')))
+    # if rf_value=='RF':
+    #     rf_stim_update = dcc.Loading(dcc.Graph(id='rf', figure=rf_fig))
+    # else:
+    #     rf_stim_update = ... #markdown for stim
 
-    return fig, show_brain, rf_stim_update
+    return fig, show_brain, rf_style, stim_style
 
 
 if __name__ == '__main__':
-    app.run_server()
+    #app.run_server()
+    app.run_server(debug=True, host='127.0.0.1')
