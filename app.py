@@ -428,7 +428,7 @@ app.layout = html.Div([
 # have clicked on the brain figure
 @app.callback(
      [Output('rf', 'figure'),
-      Output('stim_desc', 'children')],
+      Output('stim_div', 'children')],
     [Input('brain-fig', 'clickData'),
      Input('corr-type-dropdown', 'value'),
      Input('rf-stim-dropdown', 'value')])
@@ -442,16 +442,19 @@ def update_rf(clickData, corr_val, rf_value):
     
     if rf_value == 'RF':
         rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
-        stim_updated = ''' none '''
+        stim_updated = dcc.Markdown('''
+                        No data.
+                       ''',
+                    id='stim_desc')
     else:
         passive_description = stim_effects['passive_effect'][elec_num]
         repet_description = stim_effects['repetition_effect'][elec_num]
         rf_updated = PreventUpdate
-        stim_updated = '''
+        stim_updated = dcc.Markdown('''
                         *Passive:* {passive_description}
                         *Repetition:* {repet_description}  
-                       '''
-
+                       ''',
+                    id='stim_desc')
 
     return rf_updated, stim_updated
 
@@ -501,5 +504,5 @@ def display_click_data(rf_value, radio_value, brain_value, corr_val):
 
 
 if __name__ == '__main__':
-    #app.run_server()
-    app.run_server(debug=True, host='127.0.0.1')
+    app.run_server()
+    #app.run_server(debug=True, host='127.0.0.1')
