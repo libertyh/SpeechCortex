@@ -88,6 +88,7 @@ def create_figure(dropdownData='RF', elec_marker='vcorrs',
               'x': stim_effects['x'],
               'y': stim_effects['y'],
               'z': stim_effects['z'],
+              'anatomy': stim_effects['anatomy'],
               'effect': stim_effects['effect']},
         )
 
