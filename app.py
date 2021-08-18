@@ -365,12 +365,6 @@ app.layout = html.Div([
             id='rf',
             figure=rf_fig,
         ),
-        dcc.Markdown(
-            id='stim_description',
-            '''
-            Description of stimulation result.
-            ''',
-        ),
         ],
         style={'width': '30%', 'display': 'inline-block', 'vertical-align': 'top'}),
         #style={'width': '30%', 'display': 'block', 'vertical-align': 'top'}),
