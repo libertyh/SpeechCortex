@@ -406,7 +406,7 @@ app.layout = html.Div([
             html.Div([
                 html.H4('Stimulation effects'),
                 html.P('Click on an electrode to show stimulation effects.', 
-                       id='stim_desc')
+                       id='stim_desc'),
                 html.P('', id='repet_effect')
                 ],
             id="stim_div",
