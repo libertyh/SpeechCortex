@@ -13,6 +13,7 @@ import plotly.graph_objs as go
 import time
 import os
 from flask_caching import Cache
+from dash.exceptions import PreventUpdate
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -412,37 +413,32 @@ app.layout = html.Div([
 # based on the correlation type you choose and what you
 # have clicked on the brain figure
 @app.callback(
-    [Output('rf', 'figure'),
-     Output('stim_desc','children')],
+     [Output('rf', 'figure'),
+      Output('stim_desc', 'children')],
     [Input('brain-fig', 'clickData'),
      Input('corr-type-dropdown', 'value'),
      Input('rf-stim-dropdown', 'value')])
 def update_rf(clickData, corr_val, rf_value):
+    ctx = dash.callback_context
+    prop_id = ctx.triggered[0]['prop_id'].split('.')[0]
     try:
         elec_num = clickData['points'][0]['id']
     except:
         elec_num = None
     
     if rf_value == 'RF':
-        rf_updated = dcc.Loading(dcc.Graph(
-                id='rf',
-                figure=create_rf(elec_num=elec_num, corr_type=int(corr_val))),
-            )
+        rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
+        return rf_updated, PreventUpdate
     else:
-        rf_updated = ''
-
-    if rf_value == 'ST':
         passive_description = stim_effects['passive_effect'][elec_num]
         repet_description = stim_effects['repetition_effect'][elec_num]
         
-        stim_description =  '''
+        stim_updated = dcc.Loading((dcc.Markdown('''
                         *Passive:* {passive_description}
                         *Repetition:* {repet_description}  
-                        '''
-    else:
-        stim_description = ''
-    
-    return rf_updated, stim_description
+                        ''',
+            id='stim_desc')))
+        return PreventUpdate, stim_updated
 
 
 # This callback will change the brain figure to show
