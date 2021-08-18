@@ -293,7 +293,6 @@ rf_fig = create_rf()
 
 #fig.update_traces(selector=dict(name='electrode'), marker=dict(color='mediumblue', size=20), row=1, col=1)
 rf_markdown = dcc.Markdown('''
-            ## This brain area responds to vowels. ##
             **Receptive field viewer**: Click on an electrode on the brain to see its corresponding receptive field on the right.
 
             **Brain Controls:**
@@ -409,7 +408,10 @@ app.layout = html.Div([
             ),
             html.Div([
                 html.H4('Stimulation effects'),
-                html.P('Effect types: '),
+                html.P('Click on an electrode to see effects of stimulation on passive \
+                        listening and on speech perception. We recommend you turn off\
+                        the "whole brain" switch at the top left to show the temporal lobe only.')
+                html.P('Effect types: ', style={'font-weight': 'bold'}),
                 html.P('1 (blue): sound hallucination + no problems perceiving speech',
                        style={'background-color': '#0c2350', 'padding': '10px', 'color': '#ffffff'}),
                 html.P('2 (white): no sound hallucination + problems perceiving speech',
