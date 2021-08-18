@@ -450,8 +450,8 @@ def update_rf(clickData, corr_val, rf_value):
             passive_description = stim_effects['passive_effect'][elec_num]
             repet_description = stim_effects['repetition_effect'][elec_num]
             rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
-            stim_updated = f'*Passive:* {passive_description} \
-                         *Repetition:* {repet_description}'
+            stim_updated = 'There is an effect here.'#f'*Passive:* {passive_description} \
+                           #*Repetition:* {repet_description}'
 
     return rf_updated, stim_updated
 
