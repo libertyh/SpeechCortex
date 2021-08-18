@@ -395,18 +395,8 @@ app.layout = html.Div([
             figure=rf_fig,
         ),
         ],
+        id="rf_or_stim_div",
         style={'width': '30%', 'display': 'inline-block', 'vertical-align': 'top'}),
-
-        html.Div([
-        dcc.Markdown(
-            '''
-            These are the stim results.
-            ''',
-            id='stim_results',
-            ),
-        ],
-        style={'width': '30%', 'display': 'none', 'vertical-align': 'top'}),
-        #style={'width': '30%', 'display': 'block', 'vertical-align': 'top'}),
 
         html.Div([
                 rf_markdown,
@@ -422,7 +412,8 @@ app.layout = html.Div([
 # based on the correlation type you choose and what you
 # have clicked on the brain figure
 @app.callback(
-    Output('rf', 'figure'),
+    [Output('rf', 'figure'),
+     Output('stim_results','children')],
     [Input('brain-fig', 'clickData'),
      Input('corr-type-dropdown', 'value')])
 def update_rf(clickData, corr_val):
@@ -430,7 +421,11 @@ def update_rf(clickData, corr_val):
         elec_num = clickData['points'][0]['id']
     except:
         elec_num = None
-    return create_rf(elec_num=elec_num, corr_type=int(corr_val))
+    rf_updated = dcc.Graph(
+            id='rf',
+            figure=create_rf(elec_num=elec_num, corr_type=int(corr_val)),
+        )
+    return rf_updated
 
 
 # This callback will change the brain figure to show
@@ -440,8 +435,7 @@ def update_rf(clickData, corr_val):
 @app.callback(
     [Output('brain-fig', 'figure'),
      Output('show-brain', 'label'),
-     Output('rf', 'style'),
-     Output('stim_results', 'style')],
+     Output('rf_or_stim_div', 'children')],
     [Input('rf-stim-dropdown', 'value'), 
      Input('radio-color', 'value'),
      Input('show-brain', 'on'),
@@ -464,13 +458,15 @@ def display_click_data(rf_value, radio_value, brain_value, corr_val):
         show_brain = "Whole brain"
     else:
         show_brain = "Temporal lobe only"
-    if rf_value == 'RF':
-        stim_style = {'width': '30%', 'display': 'none', 'vertical-align': 'top'}
-        rf_style = {'width': '30%', 'display': 'inline-block', 'vertical-align': 'top'}
+
+    if rf_value=='RF':
+        rf_stim_update = dcc.Graph(id='rf', figure=rf_fig)
     else:
-        stim_style = {'width': '30%', 'display': 'inline-block', 'vertical-align': 'top'}
-        rf_style = {'width': '30%', 'display': 'none', 'vertical-align': 'top'}
-    return fig, show_brain, rf_style, stim_style
+        rf_stim_update = dcc.Markdown('''
+            Click on an electrode to view stimulation effects.
+            ''')
+
+    return fig, show_brain, rf_stim_update
 
 
 if __name__ == '__main__':
