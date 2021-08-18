@@ -315,7 +315,7 @@ app.layout = html.Div([
     
                     This is an interactive tool to accompany our paper showing receptive fields across
                     multiple sub-fields of auditory cortex. Select from the Dropdown menu below to
-                    explore receptive field findings and stimulation findings.
+                    explore receptive field findings and stimulation findings. [Video Tutorial.](https://youtube.com/)
     
                     '''),
             ]),
@@ -418,7 +418,7 @@ app.layout = html.Div([
                        style={'background-color': '#f1f2f2', 'padding': '10px', 'color': '#000000'}),
                 html.P('3 (red): Complex response',
                        style={'background-color': '#73001c', 'padding': '10px', 'color': '#ffffff'}),
-                html.P('Click on an electrode to show stimulation effects.', 
+                html.('', 
                        id='stim_desc'),
                 html.P('', id='repet_effect')
                 ],
@@ -465,7 +465,7 @@ def update_rf(clickData, corr_val, rf_value):
     else:
         if (prop_id == 'rf-stim-dropdown') or (prop_id=='corr-type-dropdown'):
             elec_num = 0
-            stim_updated = 'Click on an electrode to see stimulation results.'
+            stim_updated = ''
             rep_updated = ''
         else: 
             passive_description = stim_df['passive_effect'][elec_num]
@@ -489,7 +489,7 @@ def update_rf(clickData, corr_val, rf_value):
      Input('radio-color', 'value'),
      Input('show-brain', 'on'),
      Input('corr-type-dropdown', 'value')])
-@cache.memoize(timeout=timeout)  # in seconds, cache the data 
+# @cache.memoize(timeout=timeout)  # in seconds, cache the data 
 def display_click_data(rf_value, radio_value, brain_value, corr_val):
     ctx = dash.callback_context
     prop_id = ctx.triggered[0]['prop_id'].split('.')[0]
