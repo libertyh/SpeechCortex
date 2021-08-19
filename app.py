@@ -19,7 +19,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 suppress_callback_exceptions=True
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-app.title('Speech Brain Viewer')
+app.title='Speech Brain Viewer'
 server = app.server
 cache = Cache(app.server, config={
         'CACHE_TYPE': 'redis',
