@@ -385,6 +385,9 @@ rf_markdown = dcc.Markdown('''
             or back than expected. The anatomical name that shows on hover is taken from the original (native space)
             brain data. Electrodes have been projected to the nearest surface vertex for ease of clicking. For the most
             accurate visualization, please see [our paper](https://doi.org/10.1016/j.cell.2021.07.019).
+
+            Brain viewer created by Liberty Hamilton 2021 using [Dash and Plotly for python](https://dash.plotly.com/).
+            Contact liberty.hamilton@austin.utexas.edu with any questions.
             ''')
 
 # This creates the initial app in its first instantiation. This will be
