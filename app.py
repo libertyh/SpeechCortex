@@ -401,7 +401,7 @@ app.layout = html.Div([
     
                     This is an interactive tool to accompany our paper showing receptive fields across
                     multiple sub-fields of auditory cortex. Select from the Dropdown menu below to
-                    explore receptive field findings and stimulation findings. Works best on desktop computers, tablet/mobile does not include all features. [Video Tutorial.](https://youtube.com/)
+                    explore receptive field findings and stimulation findings. Works best on desktop computers, tablet/mobile does not include all features. [Video Tutorial.](https://www.youtube.com/watch?v=Q0zulm4ciRI&ab_channel=LibertyHamilton)
     
                     '''),
             ]),
