@@ -277,18 +277,18 @@ def create_rf(elec_num=310, corr_type=12):
             strf = np.fliplr(full_strf[elec_num,15:25,:])
             #yticks = [0,1,15,25,35]
             #yticklabels = ['on','ph','ab','rl','dr']
-            yticks = [0,5,9]
-            yticklabels = [-1, 0, 1]
+            yticks = [0,9]
+            yticklabels = [90, 250]
             ticksize = 12
-            ylabel = ''
-            autorange = 'reversed'
+            ylabel = 'Abs. Pitch (Hz)'
+            autorange = True
         elif corr_type == 4:
             strf = np.fliplr(rel_strf[elec_num,:,:])
-            yticks = [0, 5, 9]#np.arange(rel_strf.shape[1])
-            yticklabels = [-1, 0, 1]
+            yticks = [0, 4.5, 9, 10, 14.5, 19]#np.arange(rel_strf.shape[1])
+            yticklabels = [-1.9, 0, 1.9, -0.4, 0, 0.3]
             ticksize = 12
-            ylabel = 'Relative Pitch'
-            autorange = 'reversed'            
+            ylabel = 'Rel. Pitch + ∆Rel. Pitch'
+            autorange = True           
         else:
             strf = np.fliplr(full_strf[elec_num,:,:])
             reorder = [0,strf.shape[0]-1]+list(np.arange(1,full_strf.shape[1]-1))
@@ -346,6 +346,8 @@ def create_rf(elec_num=310, corr_type=12):
             fig.add_hline(y=15.5, line_width=1, line_color='black', line_dash='dash')
             fig.add_hline(y=25.5, line_width=1, line_color='black', line_dash='dash')
             fig.add_hline(y=35.5, line_width=1, line_color='black', line_dash='dash')
+        if corr_type == 4:
+            fig.add_hline(y=9.5, line_width=1, line_color='black', line_dash='dash')
     else:
         fig.add_hline(y=11, line_width=1, line_color='black', line_dash='dash')
         fig.add_hline(y=43, line_width=1, line_color='black', line_dash='dash')
