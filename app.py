@@ -38,6 +38,8 @@ full_strf = scipy.io.loadmat('full_strf.mat')['strf']
 spect_strf = scipy.io.loadmat('spect_strf.mat')['strf']
 onset_strf = scipy.io.loadmat('onset_strf.mat')['strf']
 peakrate_strf = scipy.io.loadmat('peakrate_strf.mat')['peakrate_strf']
+phnfeat_strf = scipy.io.loadmat('phnfeat_strf.mat')['strf']
+rel_strf = scipy.io.loadmat('rel_strf.mat')['strf']
 elecs = scipy.io.loadmat('elecmatrix.mat')['elecmatrix']
 vcorrs1 = scipy.io.loadmat('vcorrs.mat')['vcorrs']
 vcorrs = scipy.io.loadmat('uvar.mat')['uvar']
@@ -60,6 +62,23 @@ anames2 = [a[0] for a in anames[0]]
 anat_labels = [anames2[a[0]-1] for a in anatomy]
 clr = scipy.io.loadmat('elecmatrix.mat')['area7Cols']
 clrs = [clr[a[0]-1,:].tolist() for a in anatomy]
+
+# We have a small number in the right hem that were projected to the medial wall, lets remove
+rm_elecs = np.intersect1d(np.where(elecs[:,1]<-20)[0], np.where(elecs[:,2]<-20)[0])
+elec_no = np.arange(elecs.shape[0])
+elecs_mask = np.ones((elecs.shape[0],), dtype=bool)
+elecs_mask[rm_elecs] = False
+elec_no = elec_no[elecs_mask]
+elecs = elecs[elecs_mask,:]
+vcorrs = vcorrs[elecs_mask,:]
+full_strf = full_strf[elecs_mask,:,:]
+onset_strf = onset_strf[elecs_mask,:,:]
+spect_strf = spect_strf[elecs_mask,:,:]
+peakrate_strf = peakrate_strf[elecs_mask,:]
+phnfeat_strf = phnfeat_strf[elecs_mask,:,:]
+rel_strf = rel_strf[elecs_mask,:,:]
+anum = anum[elecs_mask]
+anat_labels = [anat_labels[a] for a in elec_no]
 
 #stim_effects = pd.read_excel(io='/Users/jsh3653/Dropbox/Heschls_STRFs/data/stim/HG_stim_summary.xlsx',
 #                             sheet_name='unique_for_manuscript')
@@ -238,24 +257,54 @@ def create_rf(elec_num=310, corr_type=12):
             yticklabels = [np.round(strf.min()*100)/100., 0, np.round(strf.max()*100)/100.]
             autorange = True
         elif corr_type == 1: # peakrate
-            strf = np.fliplr(peakrate_strf[elec_num,:])
+            strf = peakrate_strf[elec_num,:][::-1]
             ticksize = 12
             yticks = [strf.min(), 0, strf.max()]
             ylabel = 'Peak rate weight (A.U.)'
             yticklabels = [np.round(strf.min()*100)/100., 0, np.round(strf.max()*100)/100.]
             autorange = True
+        elif corr_type == 2:
+            strf = np.fliplr(phnfeat_strf[elec_num,:,:])
+            yticks = np.arange(phnfeat_strf.shape[1])
+            yticklabels = ['sonorant','obstruent','voiced',
+                           'nasal','syllabic','fricative','plosive',
+                           'back','low','front','high','labial',
+                           'coronal','dorsal']
+            ticksize = 6
+            ylabel = ''
+            autorange = 'reversed'
+        elif corr_type == 3:  # abs pitch
+            strf = np.fliplr(full_strf[elec_num,15:25,:])
+            #yticks = [0,1,15,25,35]
+            #yticklabels = ['on','ph','ab','rl','dr']
+            yticks = [0,5,9]
+            yticklabels = [-1, 0, 1]
+            ticksize = 12
+            ylabel = ''
+            autorange = 'reversed'
+        elif corr_type == 4:
+            strf = np.fliplr(rel_strf[elec_num,:,:])
+            yticks = [0, 5, 9]#np.arange(rel_strf.shape[1])
+            yticklabels = [-1, 0, 1]
+            ticksize = 12
+            ylabel = 'Relative Pitch'
+            autorange = 'reversed'            
         else:
             strf = np.fliplr(full_strf[elec_num,:,:])
+            reorder = [0,strf.shape[0]-1]+list(np.arange(1,full_strf.shape[1]-1))
+            print(strf.shape)
+            print(reorder)
+            strf = strf[reorder,:]
             #yticks = [0,1,15,25,35]
             #yticklabels = ['on','ph','ab','rl','dr']
             yticks = np.arange(full_strf.shape[1])
-            yticklabels = ['onset','sonorant','obstruent','voiced',
+            yticklabels = ['onset','peakRate','sonorant','obstruent','voiced',
                            'nasal','syllabic','fricative','plosive',
                            'back','low','front','high','labial',
                            'coronal','dorsal','abs. pitch','','','',
                            '','','','','','','rel. pitch','','','',
                            '','','','','','','∆rel. pitch','','','',
-                           '','','','','','','peakRate']
+                           '','','','','','']
             ticksize = 6
             ylabel = ''
             autorange = 'reversed'
@@ -263,6 +312,8 @@ def create_rf(elec_num=310, corr_type=12):
     smax = np.abs(strf.max())
     if smax==0:
         smax = 1
+    if corr_type == 0:
+        smax = 0.1
 
     if corr_type > 1:
         fig = go.Figure(data = [
@@ -289,12 +340,12 @@ def create_rf(elec_num=310, corr_type=12):
         )
 
     if corr_type != 20:
-        if corr_type > 1:
+        if corr_type == 12:
             fig.add_hline(y=0.5, line_width=1, line_color='black', line_dash='dash')
-            fig.add_hline(y=14.5, line_width=1, line_color='black', line_dash='dash')
-            fig.add_hline(y=24.5, line_width=1, line_color='black', line_dash='dash')
-            fig.add_hline(y=34.5, line_width=1, line_color='black', line_dash='dash')
-            fig.add_hline(y=44.5, line_width=1, line_color='black', line_dash='dash')
+            fig.add_hline(y=1.5, line_width=1, line_color='black', line_dash='dash')
+            fig.add_hline(y=15.5, line_width=1, line_color='black', line_dash='dash')
+            fig.add_hline(y=25.5, line_width=1, line_color='black', line_dash='dash')
+            fig.add_hline(y=35.5, line_width=1, line_color='black', line_dash='dash')
     else:
         fig.add_hline(y=11, line_width=1, line_color='black', line_dash='dash')
         fig.add_hline(y=43, line_width=1, line_color='black', line_dash='dash')
@@ -322,7 +373,7 @@ rf_fig = create_rf()
 
 #fig.update_traces(selector=dict(name='electrode'), marker=dict(color='mediumblue', size=20), row=1, col=1)
 rf_markdown = dcc.Markdown('''
-            **Receptive field viewer**: Click on an electrode on the brain to see its corresponding receptive field on the right.
+            Click on an electrode on the brain to see its corresponding receptive field or stimulation result on the right.
 
             **Brain Controls:**
             * Zoom in and out of the brain by scrolling
@@ -330,7 +381,8 @@ rf_markdown = dcc.Markdown('''
 
             Note that the nonlinear warping of electrodes sometimes means the electrodes will seem farther forward
             or back than expected. The anatomical name that shows on hover is taken from the original (native space)
-            brain data. Electrodes have been projected to the nearest surface vertex for ease of clicking. 
+            brain data. Electrodes have been projected to the nearest surface vertex for ease of clicking. For the most
+            accurate visualization, please see [our paper](https://doi.org/10.1016/j.cell.2021.07.019).
             ''')
 
 # This creates the initial app in its first instantiation. This will be
@@ -344,7 +396,7 @@ app.layout = html.Div([
     
                     This is an interactive tool to accompany our paper showing receptive fields across
                     multiple sub-fields of auditory cortex. Select from the Dropdown menu below to
-                    explore receptive field findings and stimulation findings. [Video Tutorial.](https://youtube.com/)
+                    explore receptive field findings and stimulation findings. Works best on desktop computers, tablet/mobile does not include all features. [Video Tutorial.](https://youtube.com/)
     
                     '''),
             ]),
@@ -370,7 +422,7 @@ app.layout = html.Div([
                     ],
                     value='vcorrs'
                 )], className='three columns',
-                style={'background-color': 'lightgrey', 'padding': '10px'}),
+                style={'background-color': 'lightgrey', 'padding': '10px'}, id='color-electrodes-div'),
                 
                 html.Div([
                 html.Label('Correlation type:'),
@@ -382,8 +434,8 @@ app.layout = html.Div([
                         {'label': 'Unique Onset', 'value': '0'},
                         {'label': 'Unique Peak rate', 'value': '1'},
                         {'label': 'Unique Features', 'value': '2'},
-                        {'label': 'Unique Abs Pitch', 'value': '3'},
-                        {'label': 'Unique Rel Pitch', 'value': '4'},
+                        {'label': 'Unique Absolute Pitch', 'value': '3'},
+                        {'label': 'Unique Relative Pitch', 'value': '4'},
                     ],
                     # options=[
                     #     {'label': 'Onset', 'value': '0'},
@@ -392,7 +444,7 @@ app.layout = html.Div([
                     #     {'label': 'Spectrogram', 'value': '14'},
                     # ],
                     value='20'
-                )], className='three columns', 
+                )], className='three columns', id='corr-type-div',
                 style={'background-color': 'lightgrey', 
                         'padding': '10px', 'display': 'inline-block'}),
 
@@ -472,7 +524,9 @@ app.layout = html.Div([
 @app.callback(
      [Output('rf', 'figure'),
       Output('stim_desc', 'children'),
-      Output('repet_effect', 'children')],
+      Output('repet_effect', 'children'),
+      Output('corr-type-div', 'style'),
+      Output('color-electrodes-div', 'style')],
     [Input('brain-fig', 'clickData'),
      Input('corr-type-dropdown', 'value'),
      Input('rf-stim-dropdown', 'value')])
@@ -489,12 +543,20 @@ def update_rf(clickData, corr_val, rf_value):
         rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
         stim_updated = ''
         rep_updated = ''
+        corr_div_style={'background-color': 'lightgrey', 
+                        'padding': '10px', 'display': 'inline-block'}
+        color_elec_style={'background-color': 'lightgrey', 'padding': '10px',
+                          'display': 'inline-block'}
     else:
+        corr_div_style={'background-color': 'lightgrey', 
+                        'padding': '10px', 'display': 'none'}
+        color_elec_style={'background-color': 'lightgrey', 'padding': '10px',
+                          'display': 'none'}
         if (prop_id == 'rf-stim-dropdown') or (prop_id=='corr-type-dropdown'):
             elec_num = 0
             rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
             stim_updated = ''
-            rep_updated = ''
+            rep_updated = ''                
         else: 
             passive_description = stim_df['passive_effect'][elec_num]
             repet_description = stim_df['repetition_effect'][elec_num]
@@ -502,7 +564,7 @@ def update_rf(clickData, corr_val, rf_value):
             stim_updated = 'Passive: ' + passive_description 
             rep_updated = 'Repetition: ' + repet_description
 
-    return rf_updated, stim_updated, rep_updated
+    return rf_updated, stim_updated, rep_updated, corr_div_style, color_elec_style
 
 # This callback will change the brain figure to show
 # either receptive field data or stimulation data 
