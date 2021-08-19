@@ -37,6 +37,7 @@ styles = {
 full_strf = scipy.io.loadmat('full_strf.mat')['strf']
 spect_strf = scipy.io.loadmat('spect_strf.mat')['strf']
 onset_strf = scipy.io.loadmat('onset_strf.mat')['strf']
+peakrate_strf = scipy.io.loadmat('peakrate_strf.mat')['peakrate_strf']
 elecs = scipy.io.loadmat('elecmatrix.mat')['elecmatrix']
 vcorrs1 = scipy.io.loadmat('vcorrs.mat')['vcorrs']
 vcorrs = scipy.io.loadmat('uvar.mat')['uvar']
@@ -75,7 +76,7 @@ stim_df = pd.DataFrame(
         )
 
 def create_figure(dropdownData='RF', elec_marker='vcorrs', 
-                  show_rest_of_brain=True, corr_type=12):
+                  show_rest_of_brain=True, corr_type=20):
     '''
     Create the brain figure and modify the electrode
     colors based on dropdown menus. The frontal lobe
@@ -218,7 +219,10 @@ def create_rf(elec_num=310, corr_type=12):
         ylabel = ''
         autorange = True
     else:
-        title = 'Electrode %d, r=%2.2f'%(elec_num, vcorrs[elec_num,corr_type])
+        if (corr_type == 20) or (corr_type == 12):
+            title = 'Electrode %d, r=%2.2f'%(elec_num, vcorrs[elec_num,corr_type])
+        else: 
+            title = 'Electrode %d, unique r^2=%2.2f'%(elec_num, vcorrs[elec_num,corr_type])
         if corr_type == 20:
             strf = np.fliplr(spect_strf[elec_num,:,:])
             yticks = [11, 43, 79]
@@ -227,10 +231,18 @@ def create_rf(elec_num=310, corr_type=12):
             ylabel = 'Frequency (kHz)'
             autorange = True
         elif corr_type == 0: # onset
-            strf = np.fliplr(onset_strf[elec_num,:])
+            strf = np.fliplr(onset_strf[elec_num,:,:])
             ticksize = 12
-            yticks = [0]
-            yticklabels = ['onset']
+            yticks = [strf.min(), 0, strf.max()]
+            ylabel = 'Onset weight (A.U.)'
+            yticklabels = [np.round(strf.min()*100)/100., 0, np.round(strf.max()*100)/100.]
+            autorange = True
+        elif corr_type == 1: # peakrate
+            strf = np.fliplr(peakrate_strf[elec_num,:])
+            ticksize = 12
+            yticks = [strf.min(), 0, strf.max()]
+            ylabel = 'Peak rate weight (A.U.)'
+            yticklabels = [np.round(strf.min()*100)/100., 0, np.round(strf.max()*100)/100.]
             autorange = True
         else:
             strf = np.fliplr(full_strf[elec_num,:,:])
@@ -252,7 +264,7 @@ def create_rf(elec_num=310, corr_type=12):
     if smax==0:
         smax = 1
 
-    if corr_type != 0:
+    if corr_type > 1:
         fig = go.Figure(data = [
                 go.Heatmap(
                         x=np.linspace(-0.6,0,60),
@@ -269,15 +281,15 @@ def create_rf(elec_num=310, corr_type=12):
     else:
         fig = go.Figure(data = [
                 go.Scatter(
-                        x=np.arange(60),
-                        y=strf,
+                        x=np.linspace(-0.6,0,60),
+                        y=strf.ravel(),
                         mode='lines',
                     )
             ]
         )
 
     if corr_type != 20:
-        if corr_type != 0:
+        if corr_type > 1:
             fig.add_hline(y=0.5, line_width=1, line_color='black', line_dash='dash')
             fig.add_hline(y=14.5, line_width=1, line_color='black', line_dash='dash')
             fig.add_hline(y=24.5, line_width=1, line_color='black', line_dash='dash')
@@ -365,8 +377,8 @@ app.layout = html.Div([
                 dcc.Dropdown(
                     id='corr-type-dropdown',
                     options=[
-                        {'label': 'Full phonological+pitch', 'value': '12'},
                         {'label': 'Spectrogram', 'value': '20'},
+                        {'label': 'Full phonological+pitch', 'value': '12'},
                         {'label': 'Unique Onset', 'value': '0'},
                         {'label': 'Unique Peak rate', 'value': '1'},
                         {'label': 'Unique Features', 'value': '2'},
@@ -379,7 +391,7 @@ app.layout = html.Div([
                     #     {'label': 'Relative pitch', 'value': '12'},
                     #     {'label': 'Spectrogram', 'value': '14'},
                     # ],
-                    value='12'
+                    value='20'
                 )], className='three columns', 
                 style={'background-color': 'lightgrey', 
                         'padding': '10px', 'display': 'inline-block'}),
@@ -538,5 +550,5 @@ def display_click_data(rf_value, radio_value, brain_value, corr_val):
 
 
 if __name__ == '__main__':
-    app.run_server(processes=6)
-    #app.run_server(debug=True, host='127.0.0.1')
+    #app.run_server(processes=6)
+    app.run_server(debug=True, host='127.0.0.1')
