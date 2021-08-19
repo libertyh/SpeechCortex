@@ -475,11 +475,12 @@ def update_rf(clickData, corr_val, rf_value):
     
     if rf_value == 'RF':
         rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
-        stim_updated = 'No data'
+        stim_updated = ''
         rep_updated = ''
     else:
         if (prop_id == 'rf-stim-dropdown') or (prop_id=='corr-type-dropdown'):
             elec_num = 0
+            rf_updated = create_rf(elec_num=elec_num, corr_type=int(corr_val))
             stim_updated = ''
             rep_updated = ''
         else: 
