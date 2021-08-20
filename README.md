@@ -15,3 +15,5 @@ Then, if you wish to run this locally on your browser, you may wish to create a 
 
 This viewer was created by Liberty Hamilton at The University of Texas at Austin, 2021. 
 
+The app makes heavy use of the python [Plotly](https://plotly.com/) library and [Dash framework](https://dash.plotly.com/). This app is currently hosted at http://speechbrainviewer.com, but is deployed to [Heroku](http://heroku.com).
+
