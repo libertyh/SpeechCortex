@@ -6,5 +6,7 @@ This is an interactive viewer to accompany the paper:
 
 There is a short [tutorial video](https://www.youtube.com/watch?v=Q0zulm4ciRI&ab_channel=LibertyHamilton) available on YouTube.
 
+The viewer shows a left hemisphere brain reconstruction with electrodes recorded from patients with intractable epilepsy as they listened to speech. The receptive fields for different types of models can be shown by clicking on individual electrodes and choosing the features of interest from the dropdown menus. Stimulation data is also shown by changing the far right dropdown menu. 
+
 This viewer was created by Liberty Hamilton at The University of Texas at Austin, 2021. 
 
