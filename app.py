@@ -1,3 +1,11 @@
+# Speech Brain Viewer app
+# to accompany Hamilton, Oganian, Hall, and Chang, Cell 2021
+# https://doi.org/10.1016/j.cell.2021.07.019
+# 
+# Viewer created by Liberty Hamilton, 2021
+# Email liberty.hamilton@austin.utexas.edu with questions
+#
+
 import scipy.io
 import numpy as np
 
@@ -80,6 +88,7 @@ phnfeat_strf = phnfeat_strf[elecs_mask,:,:]
 rel_strf = rel_strf[elecs_mask,:,:]
 anum = anum[elecs_mask]
 anat_labels = [anat_labels[a] for a in elec_no]
+clrs = [clrs[a] for a in elec_no]
 
 #stim_effects = pd.read_excel(io='/Users/jsh3653/Dropbox/Heschls_STRFs/data/stim/HG_stim_summary.xlsx',
 #                             sheet_name='unique_for_manuscript')
@@ -399,7 +408,7 @@ app.layout = html.Div([
                     ### Parallel and distributed speech encoding across human auditory cortex ###
     
                     *Citation*: [Hamilton, Oganian, Hall, and Chang. _Cell_ 2021](https://doi.org/10.1016/j.cell.2021.07.019)
-    
+
                     This is an interactive tool to accompany our paper showing receptive fields across
                     multiple sub-fields of auditory cortex. Select from the Dropdown menu below to
                     explore receptive field findings and stimulation findings. Works best on desktop computers, tablet/mobile does not include all features. [Video Tutorial.](https://www.youtube.com/watch?v=Q0zulm4ciRI&ab_channel=LibertyHamilton)
